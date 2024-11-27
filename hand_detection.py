@@ -1,5 +1,6 @@
 import cv2
 import mediapipe as mp
+import json
 
 cap = cv2.VideoCapture(0)
 
@@ -27,6 +28,10 @@ def calculate_finger_openness(hand_landmarks):
 
     return finger_openness_mapping
 
+def save_data_to_json(finger_openness):
+    with open("hand_gesture_data.json", "w") as f:
+        json.dump(finger_openness, f)
+
 while cap.isOpened():
     ret, frame = cap.read()
     if not ret:
@@ -38,6 +43,7 @@ while cap.isOpened():
     if results.multi_hand_landmarks:
         for hand_landmarks in results.multi_hand_landmarks:
             finger_openness = calculate_finger_openness(hand_landmarks.landmark)
+            save_data_to_json(finger_openness)
             mp_drawing.draw_landmarks(frame, hand_landmarks, mp.solutions.hands.HAND_CONNECTIONS)
 
     cv2.imshow("Webcam Feed", frame)
